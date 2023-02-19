@@ -2,6 +2,8 @@ import React from 'react';
 import { Component } from 'react';
 
 import { nanoid } from 'nanoid';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 import AppStyle from './AppStyle.module.css';
 import { FilterContact } from './FiltrContact/FilterContact';
@@ -28,7 +30,8 @@ export class App extends Component {
     }
   }
 
-  componentDidUpdate(prevProps, prevState, snapShot) {
+  componentDidUpdate(_, prevState) {
+    //(prevProps, prevState, snapShot)
     if (this.state.contacts.length !== prevState.contacts.length) {
       localStorage.setItem(CONTACTS_KEY, JSON.stringify(this.state.contacts));
     }
@@ -39,16 +42,22 @@ export class App extends Component {
       ({ name }) => name.toLowerCase() === contact.name.toLowerCase()
     );
     if (isIncontacts) {
-      alert(`${contact.name} is already in contacts.`);
+      toast.info(`${contact.name} is already in contacts.`);
       return;
     }
     this.setState(prevState => ({
       contacts: [{ id: nanoid(), ...contact }, ...prevState.contacts],
     }));
+    toast.success(`${contact.name} added to contacts.`);
   };
 
   filterContacts = event => {
     this.setState({ filter: event.currentTarget.value });
+    if (event.currentTarget.value.length > 0) {
+      toast.warn(
+        `The following matches were found for the query " ${event.currentTarget.value} ".`
+      );
+    }
   };
 
   getContacts = () => {
@@ -59,7 +68,8 @@ export class App extends Component {
     );
   };
 
-  removeContacts = contactId => {
+  removeContacts = (contactId, name) => {
+    toast.error(`${name} deleted from contacts.`);
     this.setState(prevState => {
       return {
         contacts: prevState.contacts.filter(contact => {
@@ -76,6 +86,7 @@ export class App extends Component {
       <div className={AppStyle.container}>
         <h1 className={AppStyle.primeryTitle}>Phonebook</h1>
         <FormContact onSubmit={this.addContact} />
+        <ToastContainer />
         <h2 className={AppStyle.secondaryTitle}>Contacts </h2>
         <FilterContact value={filter} onChange={this.filterContacts} />
         <ListContact
