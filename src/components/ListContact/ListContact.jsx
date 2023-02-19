@@ -11,7 +11,7 @@ export const ListContact = ({ contacts, onRemoveContact }) => {
           <button
             type="button"
             className={ListModule.removeButton}
-            onClick={() => onRemoveContact(id)}
+            onClick={() => onRemoveContact(id, name)}
             aria-label="Delete contact"
           >
             <AddIcon width="45" height="45" />
